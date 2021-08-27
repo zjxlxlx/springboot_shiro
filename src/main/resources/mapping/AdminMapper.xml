@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tofindwork.work.mapper.AdminMapper">
+    <select id="findUser" resultType="com.tofindwork.work.entity.User">
+        select * from user
+
+        <where>
+            1 = 1
+            <if test="userWrapper.userId!=null and userWrapper.userId!=''">
+                and user_id=#{userWrapper.userId}
+            </if>
+
+            <if test="userWrapper.username!=null and userWrapper.username!=''">
+                and username=#{userWrapper.username}
+            </if>
+
+            <if test="userWrapper.phone!=null and userWrapper.phone!=''">
+                and phone=#{userWrapper.phone}
+            </if>
+
+            <if test="userWrapper.timeChoose=='1'">
+                <if test="userWrapper.start_time!=null and userWrapper.start_time!=''and
+                    userWrapper.end_time!=null and userWrapper.end_time!=''">
+                and create_time &gt;=#{userWrapper.start_time} and create_time lg;=#{userWrapper.end_time}
+                </if>
+            </if>
+
+            <if test="userWrapper.timeChoose=='2'">
+                <if test="userWrapper.start_time!=null and userWrapper.start_time!=''and
+                    userWrapper.end_time!=null and userWrapper.end_time!=''">
+                    and update_time &gt;=to_date(#{userWrapper.start_time},'yyyy-MM-dd HH:mm:ss') and update_time &lt;=#{userWrapper.end_time}
+                </if>
+            </if>
+
+            <if test="userWrapper.start_age!=null and userWrapper.start_age!=''">
+                and age &gt;=#{userWrapper.start_age}
+            </if>
+
+            <if test="userWrapper.end_age!=null and userWrapper.end_age!=''">
+                and age &lt;=#{userWrapper.end_age}
+            </if>
+
+
+        </where>
+
+    </select>
+</mapper>

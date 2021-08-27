@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tofindwork.work.mapper.RoleMapper">
+<!--    <select id="findRoleListByUserId" resultType="com.tofindwork.work.entity.Role">-->
+<!--        select * from user u-->
+<!--        left join user_role ur on u.user_id=ur.user_id-->
+<!--        left join role r on ur.role_id=r.role_id-->
+<!--        left join role_permission rp on r.role_id=rp.role_id-->
+<!--        left join permission p on rp.permission_id=p.permission_id-->
+<!--        where u.user_id=#{userId}-->
+<!--    </select>-->
+
+    <resultMap id="RoleList" type="com.tofindwork.work.entity.Role">
+        <result column="role_id" property="roleId"/>
+        <result column="role_name" property="roleName"/>
+        <result column="marks" property="marks"/>
+        <collection property="permissions" resultMap="permissionList" />
+
+    </resultMap>
+
+    <resultMap id="permissionList" type="com.tofindwork.work.entity.Permission">
+        <result property="permissionId" column="permission_id"/>
+        <result property="name" column="name"/>
+        <result property="url" column="url"/>
+    </resultMap>
+
+<!--新增用户时添加默认权限-->
+    <insert id="addRoleByUserId">
+        insert into user_role(user_id,role_id)values(#{userId},3)
+    </insert>
+
+<!-- 管理员添加权限-->
+    <insert id="addUserRoleBatch" >
+
+        INSERT into user_role(user_id,role_id)
+        <foreach collection="roleList" item="roleName" index="index" separator="union all">
+            select #{userId},role_id
+            from role
+            where role_name=#{roleName}
+        </foreach>
+
+
+
+    </insert>
+
+    <delete id="delUserRole">
+        delete from user_role
+        where user_id=#{userId} and
+        role_id in (select role_id from role
+        where  role_name in
+        <foreach collection="roleList" item="roleName" open="(" close=")" separator=",">
+            #{roleName}
+        </foreach>
+            )
+    </delete>
+
+
+    
+</mapper>
